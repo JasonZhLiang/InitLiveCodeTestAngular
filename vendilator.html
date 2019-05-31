@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html ng-app="vendingApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular involved</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container" ng-controller="VenderController">
+    <h1>Vending machine</h1>
+    <div class="col-md-12">
+        <!--note, setInputCall will set the value for inputCall based on the button you click-->
+        <p class="col-sm-2">Insert Coin(s): {{ coinNumber }}</p>
+
+        <button class="btn btn-primary col-sm-3" ng-click="setInputCall(0); addCoin()">add 5 cents</button>
+        <button class="btn btn-primary col-sm-3" ng-click="setInputCall(1); addCoin()">add 10 cents</button>
+        <button class="btn btn-primary col-sm-3" ng-click="setInputCall(2); addCoin()">add 25 cents</button>
+
+        <p>Money insert: <span class="text-primary">{{ moneyAdd }}</span> cents</p>
+    </div>
+    <br>
+    <div class="col-md-12 offset-md-2">
+        <button class="col-sm-2" ng-click="setInputCall(6)">1</button>
+        <button class="col-sm-2" ng-click="setInputCall(7)">2</button>
+        <button class="col-sm-2" ng-click="setInputCall(8)">3</button>
+        <button class="col-sm-2" ng-click="setInputCall(9)">4</button>
+        <button class="col-sm-2" ng-click="setInputCall(10)">5</button>
+    </div>
+
+    <div class="col-md-12">
+        <p class="col-sm-4">Select Item: (letter + number, such as A1)</p>
+        <button class="col-sm-2" ng-click="setInputCall(3)">A</button>
+        <!-- <button ng-repeat="i in items" class="col-sm-1 btn-info" disabled>item</button> -->
+    </div>
+    <br>
+    <div class="col-md-12">
+        <button class="col-sm-2" ng-click="setInputCall(4)">B</button>
+    </div>
+    <br>
+    <div class="col-md-12">
+        <button class="col-sm-2" ng-click="setInputCall(5)">C</button>
+    </div>
+    <br>
+
+    <div class="col-md-12">
+        <button class="col-sm-2" ng-click="setInputCall(11)">cancel</button>
+    </div>
+
+    <div class="col-md-6">
+        <h3>Total money insert: <span class="text-primary">{{ moneyInputTotal }} </span>cents</h3>
+        <h3>Item selected is: <span class="text-info">{{ itemNumber }} </span></h3>
+        <button class="btn btn-success" ng-click="vended()">Process</button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
+<script type = "text/javascript" src = "./vendilator_lib.js"></script>
+<script type = "text/javascript" >
+
+    init(null, document);
+    var moneyInputTotal = 0;
+    var amountToReturn = 0;
+    var itemNumber = '';
+
+    function hasNumber(myString) {
+        return /\d/.test(myString);
+    }
+
+    function process(){
+        if (itemNumber.length == 2 && moneyInputTotal > 0){
+            if (itemNumber.includes("A") || itemNumber.includes("B") || itemNumber.includes("C")){
+                
+                if (hasNumber(itemNumber)){
+                    if (itemNumber.includes("A")){
+                        amountToReturn = moneyInputTotal - 50;
+                    }else if (itemNumber.includes("B")){
+                        amountToReturn = moneyInputTotal - 75;
+                    }else if (itemNumber.includes("C")){
+                        amountToReturn = moneyInputTotal - 100;
+                    }
+
+                    if (amountToReturn >=0 ){
+                        vend(itemNumber);
+                    }else{
+                        print('Insufficient money for your selected item, your money is refunded');
+                        amountToReturn = moneyInputTotal;
+                    }
+                }else{
+                    print('Money is returned, you input an wrong item code');
+                    amountToReturn = moneyInputTotal;
+                }
+            }else{
+                print('Money is returned, you input an wrong item code');
+                amountToReturn = moneyInputTotal;
+            }
+        }else{//this will include the case that customer input 'cancel'
+            print('Money is returned, transaction cancled, ensure input correct item code and money');
+            amountToReturn = moneyInputTotal;
+        }
+        returnCurrency(amountToReturn);
+    }
+
+    function VenderController($scope){
+        $scope.coinNumber = 0;
+        $scope.moneyInputTotal = 0;
+        $scope.itemNumber = '';
+        // $scope.items = [1,2,3,4,5];
+
+        $scope.remaining = function() {
+            var count = 0;
+            angular.forEach($scope.todos, function(todo) {
+                count += todo.completed ? 0 : 1;
+            });
+
+            return count;
+        };
+
+        $scope.addTask = function () {
+            var todo = {
+                body: $scope.newTaskText,
+                completed: false
+            };
+
+            $scope.todos.push(todo);
+
+        };
+
+        $scope.setInputCall = function(index) {
+            console.log('index is:  '+index);
+            console.log('original inputCall is:  '+inputCall);
+            inputCall =  index;
+            var object = getInput();
+            console.dir(object);
+            if (object.type === TYPE_COIN){
+                $scope.moneyAdd = object.value;
+                $scope.moneyInputTotal += object.value;
+                moneyInputTotal = $scope.moneyInputTotal;
+                console.dir('out'+moneyInputTotal);
+            }else{
+                if ($scope.itemNumber.length < 2){//ensure only 2 character are inputed
+                    console.dir('value of itemNumber ' + $scope.itemNumber);
+                    $scope.itemNumber += object.value;// combine to code of item, such as a1
+                    console.dir('value of itemNumber after ' + $scope.itemNumber);
+                    itemNumber = $scope.itemNumber;
+                }
+            }
+        };
+
+        $scope.addCoin = function () {
+            $scope.coinNumber ++;
+        }
+        $scope.vended = function () {
+            process();
+        }
+
+    }
+
+    var app = angular.module('vendingApp', [])
+        .controller('VenderController', VenderController);
+	</script>
+
+</body>
+</html>
