@@ -2,7 +2,7 @@
 ## vendingMachine integrated with AngularJS
 
 
-Pre interview test
+*Pre interview test*
 
 ```
 The Soylent Corporation has selected you to implement the software to power their new revolutionary Soylent Green product.  The hardware is complete and the library to interact with the hardware has been provided to you in the attached files. The vending machine must be able to do handle the following requirements
