@@ -1,4 +1,4 @@
-# InitLiveCodeTestAngular
+# CodeTestAngular
 ## vendingMachine integrated with AngularJS
 
 
